@@ -66,15 +66,16 @@ export class ChatService {
       
       // Get from database directly
       const query = `
-        SELECT role, content, created_at
+        SELECT id, role, content, created_at
         FROM messages
         WHERE conversation_id = $1
         ORDER BY created_at ASC
       `;
-      const result = await pool.query(query, conversationId);
+      const result = await pool.query(query, [conversationId]);
       const history = result.rows;
       
       console.log(`Found ${history.length} messages for conversation ${conversationId}`);
+      console.log('Raw database result:', history);
       
       // Try to cache in Redis (but don't fail if Redis is down)
       try {
