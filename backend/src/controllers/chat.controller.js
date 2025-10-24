@@ -87,9 +87,8 @@ export const clearChatHistory = async (req, res) => {
 export const getConversationHistory = async (req, res) => {
   try {
     const { conversationId } = req.params;
-    const { limit = 50 } = req.query;
     
-    console.log(`Getting conversation history for ${conversationId} with limit ${limit}`);
+    console.log(`Getting conversation history for ${conversationId}`);
     
     if (!conversationId) {
       return res.status(400).json({ error: "Conversation ID required" });
@@ -101,7 +100,7 @@ export const getConversationHistory = async (req, res) => {
       return res.status(400).json({ error: "Invalid conversation ID format" });
     }
 
-    const history = await ChatService.getConversationHistory(conversationId, parseInt(limit));
+    const history = await ChatService.getConversationHistory(conversationId);
     console.log(`Returning ${history.length} messages for conversation ${conversationId}`);
     res.json({ messages: history });
   } catch (err) {

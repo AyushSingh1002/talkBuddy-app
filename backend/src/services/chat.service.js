@@ -60,9 +60,9 @@ export class ChatService {
   }
 
   // Get conversation history (simplified without Redis for now)
-  static async getConversationHistory(conversationId, limit = 10) {
+  static async getConversationHistory(conversationId) {
     try {
-      console.log(`Getting conversation history for ${conversationId} with limit ${limit}`);
+      console.log(`Getting conversation history for ${conversationId}`);
       
       // Get from database directly
       const query = `
@@ -70,9 +70,8 @@ export class ChatService {
         FROM messages
         WHERE conversation_id = $1
         ORDER BY created_at ASC
-        LIMIT $2
       `;
-      const result = await pool.query(query, [conversationId, limit]);
+      const result = await pool.query(query, conversationId);
       const history = result.rows;
       
       console.log(`Found ${history.length} messages for conversation ${conversationId}`);
