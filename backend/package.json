@@ -4,7 +4,9 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "nodemon src/server.js"
+    "dev": "nodemon src/server.js",
+    "build": "echo 'No build step required for Node.js backend'",
+    "postinstall": "echo 'Dependencies installed successfully'"
   },
   "dependencies": {
     "@upstash/redis": "^1.35.6",
