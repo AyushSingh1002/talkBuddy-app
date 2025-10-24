@@ -29,8 +29,8 @@ export const chatStart = async (req, res) => {
     // Get or create conversation using the actual character ID from database
     const conversationId = await ChatService.getOrCreateConversation(character.id, sessionId);
     
-    // Get recent conversation history (last 6 messages)
-    const messageHistory = await ChatService.getConversationHistory(conversationId, 6);
+    // Get full conversation history
+    const messageHistory = await ChatService.getConversationHistory(conversationId);
 
     // Build prompt with previous history for this character
     const prompt = buildPrompt(character, messageHistory, message);

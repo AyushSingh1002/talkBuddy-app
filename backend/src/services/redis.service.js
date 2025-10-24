@@ -52,10 +52,7 @@ export class RedisService {
       // Add new message
       history.push(message);
       
-      // Keep only last 10 messages to prevent memory issues
-      if (history.length > 10) {
-        history = history.slice(-10);
-      }
+      // Keep all messages for full conversation history
       
       // Cache updated history
       await this.cacheConversationHistory(conversationId, history, ttl);

@@ -1,9 +1,7 @@
 // utils/buildPrompt.js
 export function buildPrompt(character, history, userMessage) {
-    // Limit history to last 4 messages for faster processing
-    const recentHistory = history.slice(-4);
-    
-    const historyText = recentHistory
+    // Use full conversation history for better context
+    const historyText = history
       .map((msg) =>
         msg.role === "user"
           ? `U: ${msg.content}`
