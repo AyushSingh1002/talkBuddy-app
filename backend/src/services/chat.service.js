@@ -64,6 +64,15 @@ export class ChatService {
     try {
       console.log(`Getting conversation history for ${conversationId}`);
       
+      // Validate conversationId
+      if (!conversationId) {
+        throw new Error('Conversation ID is required');
+      }
+      
+      if (typeof conversationId !== 'string') {
+        throw new Error('Conversation ID must be a string');
+      }
+      
       // Get from database directly
       const query = `
         SELECT id, role, content, created_at
@@ -71,7 +80,12 @@ export class ChatService {
         WHERE conversation_id = $1
         ORDER BY created_at ASC
       `;
-      const result = await pool.query(query, [conversationId]);
+      
+      // Ensure conversationId is properly formatted as an array
+      const queryParams = [conversationId];
+      console.log('Query parameters:', queryParams);
+      
+      const result = await pool.query(query, queryParams);
       const history = result.rows;
       
       console.log(`Found ${history.length} messages for conversation ${conversationId}`);

@@ -89,6 +89,8 @@ export const getConversationHistory = async (req, res) => {
     const { conversationId } = req.params;
     
     console.log(`Getting conversation history for ${conversationId}`);
+    console.log('conversationId type:', typeof conversationId);
+    console.log('conversationId value:', conversationId);
     
     if (!conversationId) {
       return res.status(400).json({ error: "Conversation ID required" });
@@ -100,8 +102,12 @@ export const getConversationHistory = async (req, res) => {
       return res.status(400).json({ error: "Invalid conversation ID format" });
     }
 
-    const history = await ChatService.getConversationHistory(conversationId);
-    console.log(`Returning ${history.length} messages for conversation ${conversationId}`);
+    // Ensure conversationId is a string
+    const cleanConversationId = String(conversationId).trim();
+    console.log('Clean conversation ID:', cleanConversationId);
+
+    const history = await ChatService.getConversationHistory(cleanConversationId);
+    console.log(`Returning ${history.length} messages for conversation ${cleanConversationId}`);
     res.json({ messages: history });
   } catch (err) {
     console.error('Error in getConversationHistory:', err);
