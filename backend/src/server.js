@@ -12,10 +12,15 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
+const allowedOrigins = [
+  'exp://192.168.1.7:8081',
+  process.env.FRONTEND_URL
+].filter(Boolean); // removes undefined
+
 app.use(cors({
-  origin: 'exp://192.168.1.7:8081'
-}
-));
+  origin: allowedOrigins,
+  credentials: true,
+}));
 app.use(express.json());
 app.use( "/api/chat", chatRoute )
 app.use( "/api/characters", characterRoutes )
