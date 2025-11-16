@@ -63,15 +63,21 @@ export class ChatService {
   static async getConversationHistory(conversationId) {
     try {
       console.log(`Getting conversation history for ${conversationId}`);
+      console.log(`conversationId type: ${typeof conversationId}`);
+      console.log(`conversationId value: ${JSON.stringify(conversationId)}`);
       
       // Validate conversationId
       if (!conversationId) {
         throw new Error('Conversation ID is required');
       }
       
-      if (typeof conversationId !== 'string') {
-        throw new Error('Conversation ID must be a string');
+      // Convert to string if it's not already
+      const stringConversationId = String(conversationId).trim();
+      if (!stringConversationId) {
+        throw new Error('Conversation ID cannot be empty');
       }
+      
+      console.log(`Using conversationId: ${stringConversationId}`);
       
       // Get from database directly
       const query = `
@@ -82,10 +88,47 @@ export class ChatService {
       `;
       
       // Ensure conversationId is properly formatted as an array
-      const queryParams = [conversationId];
+      const queryParams = [stringConversationId];
       console.log('Query parameters:', queryParams);
+      console.log('Query parameters type:', typeof queryParams);
+      console.log('Query parameters length:', queryParams.length);
       
-      const result = await pool.query(query, queryParams);
+      // Test with a simple query first
+      try {
+        console.log('Testing simple query...');
+        const testResult = await pool.query('SELECT 1 as test');
+        console.log('Test query successful:', testResult.rows);
+        
+        // Test with a parameterized query
+        console.log('Testing parameterized query...');
+        const paramTestResult = await pool.query('SELECT $1 as test_param', ['test_value']);
+        console.log('Parameterized query successful:', paramTestResult.rows);
+      } catch (testError) {
+        console.error('Test query failed:', testError);
+        throw testError;
+      }
+      
+      console.log('Executing main query...');
+      
+      // Try alternative approach if the first one fails
+      let result;
+      try {
+        result = await pool.query(query, queryParams);
+      } catch (queryError) {
+        console.error('First query attempt failed:', queryError);
+        console.log('Trying alternative query format...');
+        
+        // Try with explicit parameter binding
+        const alternativeQuery = `
+          SELECT id, role, content, created_at
+          FROM messages
+          WHERE conversation_id = $1
+          ORDER BY created_at ASC
+        `;
+        
+        result = await pool.query(alternativeQuery, [stringConversationId]);
+        console.log('Alternative query successful');
+      }
       const history = result.rows;
       
       console.log(`Found ${history.length} messages for conversation ${conversationId}`);
